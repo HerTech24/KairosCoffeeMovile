@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- ========== PERMISOS (NUEVO) ========== -->
+    <!-- Permiso obligatorio para conexión con API REST -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Permiso para verificar estado de red (opcional pero recomendado) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,15 +17,26 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KairosCoffeeMovile">
+        android:theme="@style/Theme.KairosCoffeeMovile"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <!--
+            android:usesCleartextTraffic="true"
+            ↑ Permite HTTP en desarrollo (solo para testing local)
+            ⚠️ CAMBIAR A FALSE en producción si usas solo HTTPS
+        -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.KairosCoffeeMovile">
+            android:theme="@style/Theme.KairosCoffeeMovile"
+            android:windowSoftInputMode="adjustResize">
+            <!--
+                android:windowSoftInputMode="adjustResize"
+                ↑ Ajusta la UI cuando aparece el teclado (útil para formularios)
+            -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
