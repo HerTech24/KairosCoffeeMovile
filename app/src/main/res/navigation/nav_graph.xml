@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.app.ui.login.LoginFragment"
+        android:label="Login">
+        <action
+            android:id="@+id/action_login_to_catalog"
+            app:destination="@id/catalogFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/catalogFragment"
+        android:name="com.example.app.ui.catalog.CatalogFragment"
+        android:label="Catálogo">
+        <action
+            android:id="@+id/action_catalog_to_cart"
+            app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_catalog_to_crud"
+            app:destination="@id/productCrudFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.app.ui.cart.CartFragment"
+        android:label="Carrito" />
+
+    <fragment
+        android:id="@+id/productCrudFragment"
+        android:name="com.example.app.ui.admin.ProductCrudFragment"
+        android:label="Administrar Productos" />
+</navigation>
