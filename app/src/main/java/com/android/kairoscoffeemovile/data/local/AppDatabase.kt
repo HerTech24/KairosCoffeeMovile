@@ -1,7 +1,23 @@
 package com.android.kairoscoffeemovile.data.local
 
-@Database(entities = [Product::class, CartItem::class, User::class], version = 1)
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.android.kairoscoffeemovile.data.local.dao.CartDao
+import com.android.kairoscoffeemovile.data.local.dao.ProductDao
+import com.android.kairoscoffeemovile.data.local.dao.UserDao
+import com.android.kairoscoffeemovile.data.local.entities.CartItem
+import com.android.kairoscoffeemovile.data.local.entities.Product
+import com.android.kairoscoffeemovile.data.local.entities.User
+
+@Database(
+    entities = [Product::class, CartItem::class, User::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun productDao(): ProductDao
     abstract fun cartDao(): CartDao
     abstract fun userDao(): UserDao
@@ -15,8 +31,10 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "ecommerce_db"
-                ).build()
+                    "kairos_coffee_db"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

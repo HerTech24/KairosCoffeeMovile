@@ -1,4 +1,4 @@
-package com.android.kairoscoffeemovile.ui.screens.admin
+package com.android.kairoscoffeemovile.ui.screens.cart
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,10 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun ProductCrudScreen(navController: NavController) {
+fun CartScreen(navController: NavController) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Box(contentAlignment = Alignment.Center) {
-            Text(text = "Panel Admin — Gestión de Productos (CRUD)")
+            Text(text = "Carrito (vacío) — aquí se verán los items agregados")
         }
     }
 }

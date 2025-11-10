@@ -1,18 +1,23 @@
 package com.android.kairoscoffeemovile.data.repository
 
+import com.android.kairoscoffeemovile.data.local.dao.CartDao
+import com.android.kairoscoffeemovile.data.local.entities.CartItem
+import kotlinx.coroutines.flow.Flow
+
 class CartRepository(private val cartDao: CartDao) {
+
     val allCartItems: Flow<List<CartItem>> = cartDao.getAllCartItems()
 
-    suspend fun addToCart(cartItem: CartItem) {
-        cartDao.insert(cartItem)
+    suspend fun insert(item: CartItem) {
+        cartDao.insert(item)
     }
 
-    suspend fun updateQuantity(cartItem: CartItem) {
-        cartDao.update(cartItem)
+    suspend fun update(item: CartItem) {
+        cartDao.update(item)
     }
 
-    suspend fun removeFromCart(cartItem: CartItem) {
-        cartDao.delete(cartItem)
+    suspend fun delete(item: CartItem) {
+        cartDao.delete(item)
     }
 
     suspend fun clearCart() {
