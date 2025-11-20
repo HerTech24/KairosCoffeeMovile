@@ -19,7 +19,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun NavGraphWithAuth0(onAuth0LoginRequested: () -> Unit) {
-
     val navController = rememberNavController()
     val context = LocalContext.current
     val prefs = PreferencesManager.getInstance(context)
@@ -58,23 +57,6 @@ fun NavGraphWithAuth0(onAuth0LoginRequested: () -> Unit) {
         composable("admin_edit/{id}") { backStack ->
             val id = backStack.arguments?.getString("id")?.toLongOrNull() ?: 0L
             EditProductScreen(navController, productId = id)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        prefs.isLoggedInFlow.collect { logged ->
-            if (logged) {
-                val role = prefs.userRoleFlow.first()
-                if (role.equals("ADMIN", true)) {
-                    navController.navigate(Routes.ADMIN) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(Routes.CATALOG) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                }
-            }
         }
     }
 }

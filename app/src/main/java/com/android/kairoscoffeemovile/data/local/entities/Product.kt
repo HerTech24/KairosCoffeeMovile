@@ -11,6 +11,6 @@ data class Product(
     val descripcion: String? = null,
     val urlImagen: String? = null,
     val stock: Int = 0,
-    val idCategoria: Int,          // ⚠️ obligatorio
-    val idProveedor: Int? = null
+    val categoriaId: Long,          // ⚠️ mismo nombre que en DTO
+    val proveedorId: Long? = null   // ⚠️ mismo nombre que en DTO
 )

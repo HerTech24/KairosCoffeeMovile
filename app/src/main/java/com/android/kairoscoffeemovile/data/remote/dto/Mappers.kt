@@ -9,8 +9,8 @@ fun ProductDto.toEntity(): Product = Product(
     descripcion = descripcion,
     urlImagen = urlImagen,
     stock = stock,
-    idCategoria = idCategoria,
-    idProveedor = idProveedor
+    categoriaId = categoriaId,
+    proveedorId = proveedorId
 )
 
 fun Product.toDto(): ProductDto = ProductDto(
@@ -19,8 +19,8 @@ fun Product.toDto(): ProductDto = ProductDto(
     descripcion = descripcion,
     precio = precio,
     stock = stock,
-    idCategoria = idCategoria,
-    idProveedor = idProveedor,
+    categoriaId = categoriaId,
+    proveedorId = proveedorId,
     urlImagen = urlImagen,
     ofertaActiva = false
 )

@@ -51,10 +51,9 @@ class MainActivity : ComponentActivity() {
                 object : Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(result: Credentials) {
                         val idToken = result.idToken
-                        loginViewModel.auth0SignedIn(idToken) {
-                            // Navegación automática por NavGraph
-                        }
+                        loginViewModel.auth0SignedIn(idToken)
                     }
+
                     override fun onFailure(error: AuthenticationException) {
                         loginViewModel.setError("Auth0 Error: ${error.message ?: "Error desconocido"}")
                     }

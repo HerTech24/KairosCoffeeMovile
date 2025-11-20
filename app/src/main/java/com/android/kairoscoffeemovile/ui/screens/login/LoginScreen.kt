@@ -23,70 +23,100 @@ fun LoginScreen(
 
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
 
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Iniciar Sesión", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.height(12.dp))
+    // Observar cambios en el estado de login para navegar
+    val isLoggedIn by viewModel.prefs.isLoggedInFlow.collectAsState(initial = false)
+    val userRole by viewModel.prefs.userRoleFlow.collectAsState(initial = "")
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Correo (Admin)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(12.dp))
-
-            Button(
-                onClick = {
-                    scope.launch {
-                        viewModel.adminLogin(email, password) {
-                            navController.navigate(Routes.ADMIN) {
-                                popUpTo(Routes.LOGIN) { inclusive = true }
-                            }
-                        }
-                    }
-                },
-                enabled = !loading
-            ) {
-                Text("Ingresar (Admin)")
+    LaunchedEffect(isLoggedIn, userRole) {
+        if (isLoggedIn) {
+            val destination = if (userRole.equals("ADMIN", true)) {
+                Routes.ADMIN
+            } else {
+                Routes.CATALOG
             }
+            navController.navigate(destination) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Divider(
+    // Mostrar errores en Snackbar
+    LaunchedEffect(error) {
+        error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.setError(null)
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Surface(modifier = Modifier.fillMaxSize().padding(padding)) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
-            Text("O ingresa con Google (Cliente)")
-            Spacer(modifier = Modifier.height(8.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Iniciar Sesión", style = MaterialTheme.typography.headlineMedium)
+                Spacer(Modifier.height(16.dp))
 
-            Button(onClick = { onAuth0LoginRequested?.invoke() }) {
-                Text("Ingresar con Google (Auth0)")
-            }
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Correo (Admin)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !loading
+                )
+                Spacer(Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !loading
+                )
+                Spacer(Modifier.height(16.dp))
 
-            if (loading) CircularProgressIndicator()
-            if (!error.isNullOrEmpty()) {
-                Text(text = error ?: "", color = MaterialTheme.colorScheme.error)
+                Button(
+                    onClick = {
+                        scope.launch {
+                            viewModel.adminLogin(email, password)
+                        }
+                    },
+                    enabled = !loading && email.isNotBlank() && password.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Ingresar (Admin)")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+                Text("O ingresa con Google (Cliente)")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { onAuth0LoginRequested?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !loading
+                ) {
+                    Text("Ingresar con Google (Auth0)")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (loading) CircularProgressIndicator()
             }
         }
     }

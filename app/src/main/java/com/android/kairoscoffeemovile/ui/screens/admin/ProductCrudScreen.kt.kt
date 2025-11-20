@@ -22,6 +22,7 @@ import com.android.kairoscoffeemovile.data.local.AppDatabase
 import com.android.kairoscoffeemovile.data.remote.RetrofitClient
 import com.android.kairoscoffeemovile.data.remote.api.ProductApi
 import com.android.kairoscoffeemovile.data.repository.ProductRepository
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,10 +37,21 @@ fun ProductCrudScreen(navController: NavController) {
     val products by vm.products.collectAsState()
     val loading by vm.loading.collectAsState()
     val error by vm.error.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    var showDeleteDialog by remember { mutableStateOf<Long?>(null) }
 
     LaunchedEffect(Unit) { vm.load() }
 
+    // Mostrar errores en Snackbar
+    LaunchedEffect(error) {
+        error?.let {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Panel Admin — Productos") },
@@ -58,28 +70,54 @@ fun ProductCrudScreen(navController: NavController) {
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
             if (loading) LinearProgressIndicator(Modifier.fillMaxWidth())
-            if (!error.isNullOrEmpty()) Text(error ?: "", color = MaterialTheme.colorScheme.error)
+
             LazyColumn(Modifier.fillMaxSize()) {
                 items(products) { p ->
                     ListItem(
                         headlineContent = { Text(p.nombre) },
-                        supportingContent = { Text("Precio: ${p.precio} | Stock: ${p.stock}") },
+                        supportingContent = {
+                            Text("Precio: $${p.precio} | Stock: ${p.stock}")
+                        },
                         trailingContent = {
                             Row {
                                 IconButton(onClick = {
-                                    navController.navigate(Routes.ADMIN_EDIT.replace("{id}", p.id.toString()))
+                                    navController.navigate("admin_edit/${p.id}")
                                 }) {
                                     Icon(Icons.Filled.Edit, contentDescription = "Editar")
                                 }
-                                IconButton(onClick = { vm.delete(p.id) }) {
+                                IconButton(onClick = { showDeleteDialog = p.id }) {
                                     Icon(Icons.Filled.Delete, contentDescription = "Eliminar")
                                 }
                             }
                         }
                     )
-                    Divider()
+                    HorizontalDivider()
                 }
             }
         }
+    }
+
+    // Diálogo de confirmación para eliminar
+    showDeleteDialog?.let { productId ->
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = null },
+            title = { Text("Confirmar eliminación") },
+            text = { Text("¿Estás seguro de que deseas eliminar este producto?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        vm.delete(productId)
+                        showDeleteDialog = null
+                    }
+                ) {
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

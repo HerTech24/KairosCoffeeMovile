@@ -36,8 +36,20 @@ fun AddProductScreen(navController: NavController) {
     var urlImagen by remember { mutableStateOf("") }
     var idCategoria by remember { mutableStateOf("") }
     var idProveedor by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val loading by vm.loading.collectAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            errorMessage = null
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Agregar Producto") },
@@ -49,34 +61,65 @@ fun AddProductScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(Modifier.padding(padding).padding(16.dp)) {
-            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = descripcion, onValueChange = { descripcion = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = precio, onValueChange = { precio = it }, label = { Text("Precio") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = stock, onValueChange = { stock = it }, label = { Text("Stock") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = idCategoria, onValueChange = { idCategoria = it }, label = { Text("ID Categoría") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = idProveedor, onValueChange = { idProveedor = it }, label = { Text("ID Proveedor (opcional)") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = urlImagen, onValueChange = { urlImagen = it }, label = { Text("URL Imagen") }, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(12.dp))
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
+            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre *") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = descripcion, onValueChange = { descripcion = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = precio, onValueChange = { precio = it }, label = { Text("Precio *") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = stock, onValueChange = { stock = it }, label = { Text("Stock *") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = idCategoria, onValueChange = { idCategoria = it }, label = { Text("ID Categoría *") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = idProveedor, onValueChange = { idProveedor = it }, label = { Text("ID Proveedor (opcional)") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = urlImagen, onValueChange = { urlImagen = it }, label = { Text("URL Imagen") }, modifier = Modifier.fillMaxWidth(), enabled = !loading)
+            Spacer(Modifier.height(16.dp))
+
             Button(
                 onClick = {
-                    val dto = ProductDto(
-                        nombre = nombre,
-                        descripcion = descripcion.ifBlank { null },
-                        precio = precio.toDoubleOrNull() ?: 0.0,
-                        stock = stock.toIntOrNull() ?: 0,
-                        idCategoria = idCategoria.toIntOrNull() ?: throw IllegalStateException("Categoría obligatoria"),
-                        idProveedor = idProveedor.toIntOrNull(),
-                        urlImagen = urlImagen.ifBlank { null },
-                        ofertaActiva = false
-                    )
-                    vm.create(dto) { navController.popBackStack() }
+                    val precioVal = precio.toDoubleOrNull()
+                    val stockVal = stock.toIntOrNull()
+                    val categoriaVal = idCategoria.toLongOrNull()
+
+                    when {
+                        nombre.isBlank() -> errorMessage = "El nombre es obligatorio"
+                        precioVal == null || precioVal <= 0 -> errorMessage = "El precio debe ser válido y mayor a 0"
+                        stockVal == null || stockVal < 0 -> errorMessage = "El stock debe ser válido y >= 0"
+                        categoriaVal == null -> errorMessage = "La categoría es obligatoria y debe ser un número válido"
+                        else -> {
+                            val dto = ProductDto(
+                                id = null,
+                                nombre = nombre,
+                                descripcion = descripcion.ifBlank { null },
+                                precio = precioVal,
+                                stock = stockVal,
+                                categoriaId = categoriaVal,
+                                proveedorId = idProveedor.toLongOrNull(),
+                                urlImagen = urlImagen.ifBlank { null },
+                                ofertaActiva = false
+                            )
+                            vm.create(dto) { navController.popBackStack() }
+                        }
+                    }
                 },
-                enabled = nombre.isNotBlank()
+                enabled = !loading && nombre.isNotBlank()
                         && precio.toDoubleOrNull() != null
-                        && idCategoria.toIntOrNull() != null
+                        && stock.toIntOrNull() != null
+                        && idCategoria.toLongOrNull() != null,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Guardar")
+                if (loading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+                } else {
+                    Text("Guardar")
+                }
             }
         }
     }
