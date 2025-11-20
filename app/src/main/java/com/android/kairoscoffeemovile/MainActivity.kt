@@ -20,7 +20,6 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var auth0: Auth0
 
-    // 🟢 AHORA SÍ INYECTAMOS EL FACTORY
     private val loginViewModel: LoginViewModel by viewModels {
         LoginViewModelFactory(PreferencesManager.getInstance(this))
     }
@@ -50,18 +49,14 @@ class MainActivity : ComponentActivity() {
             .start(
                 this,
                 object : Callback<Credentials, AuthenticationException> {
-
                     override fun onSuccess(result: Credentials) {
                         val idToken = result.idToken
                         loginViewModel.auth0SignedIn(idToken) {
-                            // navegación automática
+                            // Navegación automática por NavGraph
                         }
                     }
-
                     override fun onFailure(error: AuthenticationException) {
-                        loginViewModel.setError(
-                            "Auth0 Error: ${error.message ?: "Error desconocido"}"
-                        )
+                        loginViewModel.setError("Auth0 Error: ${error.message ?: "Error desconocido"}")
                     }
                 }
             )

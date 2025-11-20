@@ -2,13 +2,15 @@ package com.android.kairoscoffeemovile.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.kairoscoffeemovile.data.repository.AuthRepository
 import com.android.kairoscoffeemovile.utils.JwtUtils
 import com.android.kairoscoffeemovile.utils.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val prefs: PreferencesManager
+    private val prefs: PreferencesManager,
+    private val authRepository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
     val loading = MutableStateFlow(false)
@@ -19,15 +21,12 @@ class LoginViewModel(
     fun auth0SignedIn(idToken: String, onDone: () -> Unit) {
         viewModelScope.launch {
             loading.value = true
-
             val email = JwtUtils.extractEmail(idToken)
-
             prefs.saveLoginState(
                 token = idToken,
                 role = "CUSTOMER",
                 email = email ?: ""
             )
-
             loading.value = false
             onDone()
         }
@@ -37,8 +36,10 @@ class LoginViewModel(
         viewModelScope.launch {
             loading.value = true
             try {
+                val token = authRepository.adminLogin(email, password)
+                    ?: throw IllegalStateException("Credenciales inválidas")
                 prefs.saveLoginState(
-                    token = "dummy-admin",
+                    token = token,
                     role = "ADMIN",
                     email = email
                 )

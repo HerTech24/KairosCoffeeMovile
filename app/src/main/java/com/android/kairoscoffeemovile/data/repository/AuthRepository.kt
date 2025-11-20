@@ -1,19 +1,18 @@
 package com.android.kairoscoffeemovile.data.repository
 
 import com.android.kairoscoffeemovile.data.remote.RetrofitClient
+import com.android.kairoscoffeemovile.data.remote.api.AuthApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AuthRepository {
-    private val api = RetrofitClient.apiService
+    private val api = RetrofitClient.authRetrofit().create(AuthApi::class.java)
 
-    // Admin login
     suspend fun adminLogin(email: String, password: String): String? = withContext(Dispatchers.IO) {
         val body = mapOf("email" to email, "password" to password)
         val resp = api.adminLogin(body)
         if (resp.isSuccessful) {
-            val map = resp.body()
-            map?.get("accessToken") as? String
+            resp.body()?.get("accessToken") as? String
         } else null
     }
 }

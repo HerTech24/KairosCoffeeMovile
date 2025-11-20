@@ -5,9 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "products")
 data class Product(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
-    val price: Double,
-    val description: String? = null,
-    val imageUrl: String? = null
+    @PrimaryKey val id: Long,
+    val nombre: String,
+    val precio: Double,
+    val descripcion: String? = null,
+    val urlImagen: String? = null,
+    val stock: Int = 0,
+    val idCategoria: Int,          // ⚠️ obligatorio
+    val idProveedor: Int? = null
 )

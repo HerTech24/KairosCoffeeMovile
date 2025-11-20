@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.android.kairoscoffeemovile">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -16,26 +17,21 @@
             android:name=".MainActivity"
             android:exported="true">
 
-            <!--  🔥 ESTA ES LA PARTE QUE FALTA  -->
+            <!-- ESTE BLOQUE MARCA LA ACTIVITY COMO PRINCIPAL -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- CALLBACK Auth0 -->
+            <!-- BLOQUE PARA AUTH0 (deep link con scheme demo://kairoscoffee) -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                <data
-                    android:scheme="demo"
-                    android:host="dev-06m8s2r6eqlv7mld.us.auth0.com"
-                    android:pathPrefix="/android/com.android.kairoscoffeemovile/callback" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="demo" android:host="kairoscoffee" />
             </intent-filter>
 
         </activity>
 
     </application>
-
 </manifest>
