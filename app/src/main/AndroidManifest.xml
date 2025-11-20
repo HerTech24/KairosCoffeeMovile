@@ -1,45 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- ========== PERMISOS (NUEVO) ========== -->
-    <!-- Permiso obligatorio para conexión con API REST -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Permiso para verificar estado de red (opcional pero recomendado) -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KairosCoffeeMovile"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="31">
-        <!--
-            android:usesCleartextTraffic="true"
-            ↑ Permite HTTP en desarrollo (solo para testing local)
-            ⚠️ CAMBIAR A FALSE en producción si usas solo HTTPS
-        -->
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.KairosCoffeeMovile"
-            android:windowSoftInputMode="adjustResize">
-            <!--
-                android:windowSoftInputMode="adjustResize"
-                ↑ Ajusta la UI cuando aparece el teclado (útil para formularios)
-            -->
+            android:exported="true">
+
+            <!--  🔥 ESTA ES LA PARTE QUE FALTA  -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- CALLBACK Auth0 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:scheme="demo"
+                    android:host="dev-06m8s2r6eqlv7mld.us.auth0.com"
+                    android:pathPrefix="/android/com.android.kairoscoffeemovile/callback" />
+            </intent-filter>
+
         </activity>
+
     </application>
 
 </manifest>
