@@ -80,4 +80,20 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+
+    // JUnit
+    testImplementation("junit:junit:4.13.2")
+
+    // Mockito
+    testImplementation("org.mockito:mockito-core:5.2.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+
+    // Mockito Kotlin (más limpio)
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
+
+    // Coroutines test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // LiveData & ViewModel test
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 }
